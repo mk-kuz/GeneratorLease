@@ -1,8 +1,9 @@
-package ru.bell.generatorlease;
+package ru.bell.generatorlease.service;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ru.bell.generatorlease.models.CarModel;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,7 +17,7 @@ public class Sender {
         CarModel carModel = new CarModel().setVIN(VIN).setBrand(brand).setType(type)
                 .setYear(year).setPrice(price);
         String json = new Gson().toJson(carModel);
-        send(json);
+        System.out.println(json);
     }
 
     @SneakyThrows

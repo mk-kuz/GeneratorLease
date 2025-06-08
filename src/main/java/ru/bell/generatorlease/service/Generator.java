@@ -1,10 +1,8 @@
-package ru.bell.generatorlease;
+package ru.bell.generatorlease.service;
 
 
 import jakarta.annotation.PostConstruct;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,23 +23,19 @@ public class Generator {
         constructMaps();
     }
 
-    @Scheduled(fixedRate = 200)
+    @Scheduled(fixedRate = 100)
     public void run() throws InterruptedException {
-        int counter = 0;
-        while (counter < 150) {
-            Map.Entry<String, String> entry = generateBrandAndType()
-                    .entrySet().stream()
-                    .findFirst()
-                    .get();
-            sender.doSendCar(
-                    generateVIN(),
-                    entry.getKey(),
-                    entry.getValue(),
-                    generateYear(),
-                    generatePrice()
-            );
-            counter++;
-        }
+        Map.Entry<String, String> entry = generateBrandAndType()
+                .entrySet().stream()
+                .findFirst()
+                .get();
+        sender.doSendCar(
+                generateVIN(),
+                entry.getKey(),
+                entry.getValue(),
+                generateYear(),
+                generatePrice()
+        );
     }
 
     private String generatePrice() {
@@ -76,66 +70,6 @@ public class Generator {
             }
         }
         return vin.toString();
-    }
-
-    private void testIterate() throws InterruptedException {
-        for (int i = 1; i < 6; i++) {
-            Integer pointer = pointers.get(String.valueOf(i));
-            int bound = sizeC - 1;
-            int lag = new Random().nextInt(1, 5);
-            int stepInto = pointer + lag;
-            Numpad numpad = new Numpad().setPointer(pointer).setBound(bound).setLag(lag).setStepInto(stepInto);
-            System.out.println(numpad.toString());
-            if (stepInto > bound) {
-                System.out.println("ENGAGEMENT");
-                System.out.println("curr pointer: " + pointer);
-                pointer = stepInto - sizeC;
-                Thread.sleep(300);
-                System.out.println("new pointer " + pointer);
-                System.out.println("lag " + lag);
-                System.out.println("stepInto " + stepInto);
-                pointers.replace(String.valueOf(i), pointer);
-            } else {
-                pointer = pointer + lag;
-                pointers.replace(String.valueOf(i), pointer);
-            }
-            Thread.sleep(300);
-            System.out.println("new pointer: " + pointer);
-        }
-
-    }
-
-    @Accessors(chain = true)
-    @Data
-    private class Numpad {
-        public int pointer;
-        public int bound;
-        public int lag;
-        public int stepInto;
-
-    }
-
-    private void test() throws InterruptedException {
-        int i = 0;
-        while (true) {
-            System.out.println(CHARS[i]);
-            if (i == sizeC - 1) {
-                Thread.sleep(1500);
-                System.out.println("THIS IS THE END");
-                i = 0;
-            } else {
-                i++;
-            }
-            Thread.sleep(300);
-        }
-    }
-
-    private void findDuplicates(List<String> vins) {
-        int size = vins.size();
-        System.out.println("List: " + size);
-        Set<String> duplicates = new HashSet<>(vins);
-        int setSize = duplicates.size();
-        System.out.println("Set: " + setSize);
     }
 
     private void constructMaps() {

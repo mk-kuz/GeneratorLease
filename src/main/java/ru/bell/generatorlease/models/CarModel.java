@@ -1,4 +1,4 @@
-package ru.bell.generatorlease;
+package ru.bell.generatorlease.models;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
