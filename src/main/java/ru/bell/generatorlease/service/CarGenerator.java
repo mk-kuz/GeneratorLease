@@ -5,37 +5,43 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.bell.generatorlease.models.CarModel;
+import ru.bell.generatorlease.storage.CarStorage;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class Generator {
+public class CarGenerator {
     private final Sender sender;
+    private final CarStorage storage;
     private final String PREFIX = "123456789000";
     private final char[] CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private final int CODE_OK = 200;
     private final int sizeC = CHARS.length;
     private Map<String, Integer> pointers;
     private List<Map<String, String>> brandsAndTypes;
 
     @PostConstruct
-    public void init() throws InterruptedException {
+    public void init() {
         constructMaps();
     }
 
-    @Scheduled(fixedRate = 100)
-    public void run() throws InterruptedException {
+    @Scheduled(fixedRate = 500, initialDelay = 1500)
+    public void carGenAndSend() {
         Map.Entry<String, String> entry = generateBrandAndType()
                 .entrySet().stream()
                 .findFirst()
                 .get();
-        sender.doSendCar(
-                generateVIN(),
-                entry.getKey(),
-                entry.getValue(),
-                generateYear(),
-                generatePrice()
-        );
+        CarModel carModel = new CarModel()
+                .setVIN(generateVIN())
+                .setBrand(entry.getKey())
+                .setType(entry.getValue())
+                .setYear(generateYear())
+                .setPrice(generatePrice());
+        if (sender.doSendCar(carModel) == CODE_OK) {
+            storage.add(carModel.getVIN());
+        }
     }
 
     private String generatePrice() {
@@ -52,7 +58,7 @@ public class Generator {
         return brandsAndTypes.get(pointer);
     }
 
-    public String generateVIN() throws InterruptedException {
+    public String generateVIN() {
         StringBuilder vin = new StringBuilder();
         vin.append(PREFIX);
         for (int i = 1; i < 6; i++) {
