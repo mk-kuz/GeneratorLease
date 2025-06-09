@@ -4,22 +4,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Queue;
 
 @Service
 public abstract class AbstractStorage {
-    protected final Queue<String> elements;
+    protected final Queue<Object> elements;
 
     public AbstractStorage() {
         this.elements = new LinkedList<>();
     }
 
-    public Queue<String> getList() {
+    public Queue<?> getList() {
         return elements;
     }
 
-    public String getNextAndRemove() throws NoSuchElementException {
+    public Object getNextAndRemove() throws NoSuchElementException {
         return elements.poll();
     }
 
@@ -27,7 +26,7 @@ public abstract class AbstractStorage {
         return !elements.isEmpty();
     }
 
-    public void add(String item) {
+    public void add(Object item) {
         elements.add(item);
     }
 }

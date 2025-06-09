@@ -1,5 +1,7 @@
 package ru.bell.generatorlease.service;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -7,10 +9,14 @@ import org.springframework.stereotype.Service;
 import ru.bell.generatorlease.models.ClientModel;
 import ru.bell.generatorlease.storage.ClientStorage;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.google.gson.JsonParser.parseString;
 
 @RequiredArgsConstructor
 @Service
@@ -26,14 +32,19 @@ public class ClientGenerator {
         constructLists();
     }
 
-    @Scheduled(initialDelay = 311, fixedRate = 555)
+    @Scheduled(initialDelay = 500, fixedRate = 1300)
     public void generateAndSend() {
         ClientModel clientModel = new ClientModel()
                 .setName(generateName())
                 .setDocumentNumber(generateDocument())
                 .setCellNumber(generateCellphone());
-        int sendClient = sender.doSendClient(clientModel);
-        storage.add(String.valueOf(sendClient));
+        Optional<HttpResponse<?>> sendClient = sender.doSendClient(clientModel);
+        if (sendClient.isPresent() && sendClient.get().statusCode() == CODE_OK) {
+            String body = (String) sendClient.get().body();
+            JsonObject json = parseString(body).getAsJsonObject();
+            int id = json.get("id").getAsInt();
+            storage.add(id);
+        }
     }
 
     private void constructLists() {

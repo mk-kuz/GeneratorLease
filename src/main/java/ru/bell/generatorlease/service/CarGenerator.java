@@ -3,6 +3,7 @@ package ru.bell.generatorlease.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.bell.generatorlease.models.CarModel;
@@ -10,6 +11,7 @@ import ru.bell.generatorlease.storage.CarStorage;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CarGenerator {
@@ -27,7 +29,7 @@ public class CarGenerator {
         constructMaps();
     }
 
-    @Scheduled(initialDelay = 1333, fixedRate = 444)
+    @Scheduled(initialDelay = 1000, fixedRate = 1500)
     public void generateAndSend() {
         Map.Entry<String, String> entry = generateBrandAndType()
                 .entrySet().stream()
@@ -80,11 +82,11 @@ public class CarGenerator {
 
     private void constructMaps() {
         pointers = new LinkedHashMap<>();
-        pointers.put("1", 0);
-        pointers.put("2", 5);
-        pointers.put("3", 10);
-        pointers.put("4", 15);
-        pointers.put("5", 24);
+        pointers.put("1", new Random().nextInt(0, 5));
+        pointers.put("2", new Random().nextInt(5, 10));
+        pointers.put("3", new Random().nextInt(10, 15));
+        pointers.put("4", new Random().nextInt(15, 20));
+        pointers.put("5", new Random().nextInt(20, 25));
 
         List<Map<String, String>> brands = new ArrayList<>();
 
