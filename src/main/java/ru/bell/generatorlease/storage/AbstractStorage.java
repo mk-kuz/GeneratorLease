@@ -19,8 +19,12 @@ public abstract class AbstractStorage {
         return elements;
     }
 
-    public Optional<String> getNextAndRemove() throws NoSuchElementException {
-        return Optional.ofNullable(elements.poll());
+    public String getNextAndRemove() throws NoSuchElementException {
+        return elements.poll();
+    }
+
+    public boolean hasNext() {
+        return !elements.isEmpty();
     }
 
     public void add(String item) {

@@ -27,8 +27,8 @@ public class CarGenerator {
         constructMaps();
     }
 
-    @Scheduled(fixedRate = 500, initialDelay = 1500)
-    public void carGenAndSend() {
+    @Scheduled(initialDelay = 1333, fixedRate = 444)
+    public void generateAndSend() {
         Map.Entry<String, String> entry = generateBrandAndType()
                 .entrySet().stream()
                 .findFirst()
